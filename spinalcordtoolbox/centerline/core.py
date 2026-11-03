@@ -70,11 +70,14 @@ def find_and_sort_coord(img):
     along the SI direction by averaging across the same ind_SI.
 
     :param img: Image(): Input image. Could be any orientation.
-    :return: nx3 numpy array with X, Y, Z coordinates of center of mass
+    :return: 3xn numpy array with X, Y, Z coordinates of center of mass
     """
     # TODO: deal with nan, etc.
     # Get indices of non-zero values
     arr = np.array(np.where(img.data))
+    if arr.size == 0:
+        fname = f" '{img.absolutepath}'" if getattr(img, 'absolutepath', None) else ""
+        raise ValueError(f"Empty image{fname}: No non-zero voxels found to extract coordinates.")
     # Sort indices according to SI axis
     dim_si = [img.orientation.find(x) for x in ['I', 'S'] if img.orientation.find(x) != -1][0]
     # Loop across SI axis and average coordinates within duplicate SI values

@@ -157,6 +157,28 @@ def test_find_and_sort_coord(img_ctl, expected):
     assert np.linalg.norm(centermass - img_ctl[2]) == 0
 
 
+def test_find_and_sort_coord_empty():
+    """Test that find_and_sort_coord raises ValueError when input image is empty."""
+    img_empty = Image(param=np.zeros((10, 10, 10)))
+    with pytest.raises(ValueError, match="Empty image: No non-zero voxels found to extract coordinates."):
+        find_and_sort_coord(img_empty)
+
+
+def test_find_and_sort_coord_empty_with_path():
+    """Test that find_and_sort_coord includes file path in ValueError when absolutepath is available."""
+    img_empty = Image(param=np.zeros((10, 10, 10)))
+    img_empty.absolutepath = "/path/to/empty_seg.nii.gz"
+    with pytest.raises(ValueError, match=r"Empty image '/path/to/empty_seg\.nii\.gz': No non-zero voxels found to extract coordinates\."):
+        find_and_sort_coord(img_empty)
+
+
+def test_get_centerline_empty():
+    """Test that get_centerline raises ValueError when input segmentation is empty."""
+    img_empty = Image(param=np.zeros((10, 10, 10)))
+    with pytest.raises(ValueError, match="Empty image: No non-zero voxels found to extract coordinates."):
+        get_centerline(img_empty)
+
+
 @pytest.mark.parametrize('img_ctl,expected', im_ctl_zeroslice)
 def test_get_centerline_polyfit_minmax(img_ctl, expected):
     """Test centerline fitting with minmax=True"""
